@@ -1,0 +1,66 @@
+
+      <form action="/ajouter-etudiant" method="POST">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="mat" class="form-label">Matricule</label>
+            <input type="text" class="form-control" id="mat" name="mat" required>
+          </div>
+          <div class="col-md-6">
+            <label for="nom" class="form-label">Nom</label>
+            <input type="text" class="form-control" id="nom" name="nom" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input type="text" class="form-control" id="prenom" name="prenom" required>
+          </div>
+          <div class="col-md-6">
+            <label for="date_naissance" class="form-label">Date de naissance</label>
+            <input type="date" class="form-control" id="date_naissance" name="date_naissance" required>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="classe" class="form-label">Classe</label>
+            <input type="text" class="form-control" id="classe" name="classe">
+          </div>
+          <div class="col-md-6">
+            <label for="filiere" class="form-label">Filière</label>
+            <input type="text" class="form-control" id="filiere" name="filiere">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="universite" class="form-label">Université</label>
+            <input type="text" class="form-control" id="universite" name="universite">
+          </div>
+          <div class="col-md-6">
+            <label for="adresse" class="form-label">Adresse</label>
+            <input type="text" class="form-control" id="adresse" name="adresse">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="sexe" class="form-label">Sexe</label>
+            <select class="form-select" id="sexe" name="sexe" required>
+              <option value="">-- Sélectionner --</option>
+              <option value="Masculin">Masculin</option>
+              <option value="Féminin">Féminin</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="nationalite" class="form-label">Nationalité</label>
+            <input type="text" class="form-control" id="nationalite" name="nationalite">
+          </div>
+        </div>
+
+        <div class="text-end">
+          <a href="/" class="btn btn-secondary ms-2">Annuler</a>
+          <button type="submit" class="btn btn-success">Enregistrer</button>
+        </div>
+      </form>

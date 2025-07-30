@@ -1,6 +1,11 @@
-# 🎓 Projet de Gestion des Étudiants & Utilisateurs (Node.js, Express, EJS, MySQL)
+## 🎓 Projet de Gestion des Étudiants & Utilisateurs (Node.js, Express, EJS, MySQL)
 
-Une application web simple et puissante permettant la gestion d'utilisateurs et d'étudiants avec des rôles différenciés (`admin`, `user`), une interface élégante en EJS et une base de données MySQL.
+- Une application web simple et puissante permettant la gestion d'utilisateurs et d'étudiants avec des rôles différenciés (`admin`, `user`)
+- Une interface élégante en EJS et une base de données MySQL.
+
+## 🧑‍💼 Realiser par :
+- 👥 Ahmed Combo Rachad
+- Etudiants en STI3 genie logiciel a IPD Thomas Sankara
 
 ## 📌 Fonctionnalités principales
 
@@ -9,7 +14,6 @@ Une application web simple et puissante permettant la gestion d'utilisateurs et 
 - 👥 Liste des étudiants avec options CRUD (Créer, Lire, Modifier, Supprimer)
 - ⚙️ Contrôle d'accès (ex : un admin ne peut pas supprimer un autre admin)
 - 🖼️ Interface utilisateur soignée avec Bootstrap 5
-- 📦 Architecture MVC claire et maintenable
 
 ---
 

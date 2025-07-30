@@ -13,7 +13,7 @@ module.exports = function exposeUser(req, res, next) {
       res.locals.currentUser = null;
       return next();
     }
-    res.locals.currentUser = user; // accessible dans toutes les vues EJS
+    res.locals.currentUser = user; 
     next();
   });
 };

@@ -7,16 +7,36 @@ const router = express.Router();
 const SECRET = process.env.JWT_SECRET || 'mon_secret_jwt';
 const EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 
-// Page login
+router.get('/', async (req, res) => {
+  try {
+    const etudiants = await Etudiant.findAll();
+    const users = await Users.findAll();
+    res.render('list-etudiant', { etudiants, users });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const users = await Users.findAll();
+    const showModal = req.query.showModal === '1';
+    res.render('list-etudiant', { users, showModal });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+
 router.get('/login', (req, res) => {
   res.render('auth/login', { error: null });
 });
 
-// Soumission login
 router.post('/login', (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  db.query('SELECT * FROM users WHERE username = ?', [username], async (err, users) => {
+  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, users) => {
     if (err) return res.status(500).send('Erreur serveur');
     if (users.length === 0) return res.render('auth/login', { error: 'Utilisateur introuvable' });
 
@@ -24,21 +44,25 @@ router.post('/login', (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.render('auth/login', { error: 'Mot de passe incorrect' });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: EXPIRES_IN });
+    const token = jwt.sign({ 
+      id: user.id, 
+      username: user.username, 
+      email :user.email, 
+      role: user.role }, 
+      SECRET, { expiresIn: EXPIRES_IN }
+    );
 
     res.cookie('token', token, { httpOnly: true, secure: false }); // secure: true en HTTPS
     res.redirect('/');
   });
 });
 
-// Page d’inscription
 router.get('/register', (req, res) => {
   res.render('auth/register', { error: null });
 });
 
-// Soumission inscription
 router.post('/register', async (req, res) => {
-  const { username, password, confirmPassword, role } = req.body;
+  const { username, email ,password, confirmPassword, role } = req.body;
 
   if (password !== confirmPassword) {
     return res.render('auth/register', { error: 'Les mots de passe ne correspondent pas' });
@@ -47,18 +71,17 @@ router.post('/register', async (req, res) => {
   const hash = await bcrypt.hash(password, 10);
 
   db.query(
-    'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-    [username, hash, role || 'user'],
+    'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+    [username, email, hash, role || 'user'],
     (err) => {
       if (err) {
-        return res.render('auth/register', { error: 'Nom d’utilisateur déjà pris' });
+        return res.render('auth/register', { error: 'Nom d’utilisateur ou mail déjà pris' });
       }
       res.redirect('/auth/login');
     }
   );
 });
 
-// Déconnexion
 router.get('/logout', (req, res) => {
   res.clearCookie('token');
   res.redirect('/auth/login');

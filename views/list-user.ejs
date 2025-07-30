@@ -1,0 +1,45 @@
+<% if (users.length === 0) { %>
+  <div class="alert alert-info">Aucun user enregistré.</div>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle mb-5">
+      <thead class="table-dark text-center">
+        <tr>
+          <th>ID</th>
+          <th>Nom</th>
+          <th>E-mail</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <% if (user.role === 'user') { %>
+          <tr>
+            <td><%= user.id %></td>
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+             <td><%= user.role %></td>
+            <td class="text-center">
+              <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                        id="dropdownMenu<%= user.id %>" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu<%= user.id %>">
+                  <li>
+                    <a class="dropdown-item text-danger" href="/supprimer-user/<%= user.id %>"
+                       onclick="checkAccess('<%= currentUser?.role %>', 'delete<%= user.id %>'); return false;">
+                      <i class="bi bi-trash me-2"></i>Supprimer
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          <% } %>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

@@ -7,25 +7,31 @@
   <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
 </head>
 <body>
-  <%- include('./navbar') %>
+  <%- include('./partials/navbar') %>
+  
   <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h3>Liste des étudiants</h3>
-  </div>
-  <div>
-    <a href="#" class="btn btn-primary btn-sm py-2 px-3" data-bs-toggle="modal" data-bs-target="#confirmAddModal">
-      Ajouter etudiant
-    </a>  
-  </div>
-</div>
+      <div>
+        <h3>Liste des étudiants</h3>
+      </div>
+      <div>
+        <a href="#" class="btn btn-primary btn-sm py-2 px-3"
+           onclick="checkAccess('<%= currentUser?.role %>', 'add'); return false;">
+          Ajouter étudiant
+        </a> 
+         <a href="#" class="btn btn-primary btn-sm py-2 px-3"
+           onclick="checkAccess('<%= currentUser?.role %>', 'user'); return false;">
+          Voir les users
+        </a> 
+      </div>
+    </div>
 
     <% if (etudiants.length === 0) { %>
       <div class="alert alert-info">Aucun étudiant enregistré.</div>
     <% } else { %>
       <div class="table-responsive">
         <table class="table table-striped table-bordered align-middle">
-          <thead class="table-dark text-center ">
+          <thead class="table-dark text-center">
             <tr>
               <th>Matricule</th>
               <th>Nom</th>
@@ -41,7 +47,7 @@
             </tr>
           </thead>
           <tbody>
-            <% etudiants.forEach((etudiant, index) => { %>
+            <% etudiants.forEach(etudiant => { %>
               <tr>
                 <td><%= etudiant.mat %></td>
                 <td><%= etudiant.nom %></td>
@@ -55,17 +61,20 @@
                 <td><%= etudiant.nationalite %></td>
                 <td class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenu<%= etudiant.id %>" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                            id="dropdownMenu<%= etudiant.id %>" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="bi bi-three-dots-vertical"></i>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu<%= etudiant.id %>">
                       <li>
-                        <a class="dropdown-item text-warning" href="#" data-bs-toggle="modal" data-bs-target="#confirmEditModal<%= etudiant.id %>">
+                        <a class="dropdown-item text-warning" href="#"
+                           onclick="checkAccess('<%= currentUser?.role %>', 'edit<%= etudiant.id %>'); return false;">
                           <i class="bi bi-pencil me-2"></i>Modifier
                         </a>
                       </li>
                       <li>
-                        <a class="dropdown-item text-danger" href="#" onclick="openDeleteModal('<%= etudiant.id %>')">
+                        <a class="dropdown-item text-danger" href="#"
+                           onclick="checkAccess('<%= currentUser?.role %>', 'delete<%= etudiant.id %>'); return false;">
                           <i class="bi bi-trash me-2"></i>Supprimer
                         </a>
                       </li>
@@ -80,12 +89,12 @@
     <% } %>
   </div>
 
-<!-- Modal pour cet étudiant -->
-  <div class="modal fade" id="confirmAddModal" tabindex="-1" aria-labelledby="confirmAddModalLabel aria-hidden="true">
+  <!-- Modal Ajouter -->
+  <div class="modal fade" id="confirmAddModal" tabindex="-1" aria-labelledby="confirmAddModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content shadow">
         <div class="modal-header bg-primary text-dark">
-          <h5 class="modal-title" id="confirmEditModalLabel">Ajouter etudiant</h5>
+          <h5 class="modal-title">Ajouter étudiant</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
         </div>
         <div class="modal-body">
@@ -94,73 +103,147 @@
       </div>
     </div>
   </div>
-
-  <% etudiants.forEach(etudiant => { %>
-
-  <!-- Modal pour cet étudiant -->
-  <div class="modal fade" id="confirmEditModal<%= etudiant.id %>" tabindex="-1" aria-labelledby="confirmEditModalLabel<%= etudiant.id %>" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content shadow">
-        <div class="modal-header bg-primary text-dark">
-          <h5 class="modal-title" id="confirmEditModalLabel<%= etudiant.id %>">Modifier etudiant</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body">
-          <%- include('./edit-etudiant', { etudiant: etudiant }) %>
-        </div>
-      </div>
-    </div>
-  </div>
   
-<% }) %>
-
-
-<% etudiants.forEach(etudiant => { %>
-
-  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+<!-- Modal User -->
+<div class="modal fade" id="confirmUserModal" tabindex="-1" aria-labelledby="confirmAddModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg w-85">
     <div class="modal-content shadow">
-      <div class="modal-header bg-primary text-white mb-2">
-        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      <div class="modal-header bg-primary text-dark">
+        <h5 class="modal-title">Listes des utilisateurs</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
       </div>
-      <div class="modal-body mb-4">
-        Voulez-vous vraiment supprimer cet étudiant ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Supprimer</a>
+      <div class="modal-body">
+        <%- include('./list-user', { users: users}) %>
       </div>
     </div>
   </div>
 </div>
 
-<% }) %>
 
-<%- include('./footer') %>
+  <!-- Modals Modifier -->
+  <% etudiants.forEach(etudiant => { %>
+    <div class="modal fade" id="confirmEditModal<%= etudiant.id %>" tabindex="-1"
+         aria-labelledby="confirmEditModalLabel<%= etudiant.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content shadow">
+          <div class="modal-header bg-primary text-dark">
+            <h5 class="modal-title">Modifier étudiant</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <%- include('./edit-etudiant', { etudiant: etudiant }) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% }) %>
 
-<script>
-  function openDeleteModal(etudiantId) {
-    const deleteUrl = `/supprimer-etudiant/${etudiantId}`;
-    document.getElementById('confirmDeleteBtn').setAttribute('href', deleteUrl);
-    const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-    deleteModal.show();
-  }
+  <!-- Modal Supprimer etudiants -->
+  <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow">
+        <div class="modal-header bg-primary text-white mb-2">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body mb-4">
+          Voulez-vous vraiment supprimer cet étudiant ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <a id="confirmDeleteBtn" href="#" class="btn btn-danger">Supprimer</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  function openEditModal(editUrl) {
-    const editBtn = document.getElementById('confirmEditBtn');
-    editBtn.href = editUrl;
-    const editModal = new bootstrap.Modal(document.getElementById('confirmEditModal'));
-    editModal.show();
-  }
+  <!-- Modal Supprimer user -->
+  <div class="modal fade" id="confirmDeleteUser" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow">
+        <div class="modal-header bg-primary text-white mb-2">
+          <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body mb-4">
+          Voulez-vous vraiment supprimer cet utilisateur ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <a id="confirmDeleteUserBtn" href="#" class="btn btn-danger">Supprimer</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  function openAddModal(addtUrl) {
-    const addBtn = document.getElementById('confirmEditBtn');
-    editBtn.href = addUrl;
-    const editModal = new bootstrap.Modal(document.getElementById('confirmAddModal'));
-    editModal.show();
-  }
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Modal Accès refusé -->
+  <div class="modal fade" id="accessDeniedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Accès refusé</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Vous n'avez pas les droits nécessaires pour effectuer cette action.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./partials/footer') %>
+
+  <script>
+    function checkAccess(role, action) {
+      if (role !== 'admin') {
+        const modal = new bootstrap.Modal(document.getElementById('accessDeniedModal'));
+        modal.show();
+        return;
+      }
+
+      if (action === 'add') {
+        const modal = new bootstrap.Modal(document.getElementById('confirmAddModal'));
+        modal.show();
+      }else if (action === 'user') {
+        const modal = new bootstrap.Modal(document.getElementById('confirmUserModal'));
+        modal.show();
+      }else if (action.startsWith('edit')) {
+        const id = action.replace('edit', '');
+        const modal = new bootstrap.Modal(document.getElementById('confirmEditModal' + id));
+        modal.show();
+      } else if (action.startsWith('delete')) {
+        const id = action.replace('delete', '');
+        openDeleteModal(id);
+      }
+    }
+
+    function openDeleteModal(etudiantId) {
+      const deleteUrl = `/supprimer-etudiant/${etudiantId}`;
+      document.getElementById('confirmDeleteBtn').setAttribute('href', deleteUrl);
+      const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+      deleteModal.show();
+    }
+
+     function openDeleteModal(userId) {
+      const deleteUrl = `/supprimer-user/${userId}`;
+      document.getElementById('confirmDeleteUserBtn').setAttribute('href', deleteUrl);
+      const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteUser'));
+      deleteModal.show();
+    }
+  </script>
+
+ <% if (showModal) { %>
+    <script>
+      window.addEventListener('load', () => {
+        const modal = new bootstrap.Modal(document.getElementById('confirmUserModal'));
+        modal.show();
+      });
+    </script>
+  <% } %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

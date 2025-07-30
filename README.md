@@ -15,8 +15,6 @@
 - ⚙️ Contrôle d'accès (ex : un admin ne peut pas supprimer un autre admin)
 - 🖼️ Interface utilisateur soignée avec Bootstrap 5
 
----
-
 ## ⚙️ Stack technique
 
 - **Backend** : Node.js, Express.js
